@@ -57,7 +57,7 @@ if (!fs.existsSync(saveDirectory)) {
 // Créez ensuite le PDF avec PDFKit ou toute autre bibliothèque
 const doc = new PDFDocument();
 doc.pipe(fs.createWriteStream(fullPath));
-doc.text('Hello World!');
+doc.text('Hello ');
 doc.end();
 
   app.use(express.json());
