@@ -26,23 +26,22 @@ const eventEmitter = require('./services/event-emitter');
 const { evaluateEquipmentAfterIntervention } = require('./services/pingtest');
 const Alert = require('./models/Alert');
 
+
+
+
+const allowedOrigins = ['http://localhost:3000', 'https://react-app-7or7.vercel.app'];
+app.use(cors({
+  origin: allowedOrigins
+}));
 app.use(cors({
   origin: function(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
     }
   }
 }));
-
-
-
-const allowedOrigins = '*';
-app.use(cors({
-  origin: allowedOrigins
-}));
-
 
 const {
   generateInterventionReport, // Une seule fois
@@ -61,13 +60,9 @@ doc.pipe(fs.createWriteStream(fullPath));
 doc.text('Hello World!');
 doc.end();
 
-  // Middleware to process JSON data
   app.use(express.json());
 
-// Ajouter le middleware CORS à votre application Express
-app.use(cors({
-  origin: 'http://localhost:3000'
-}));
+
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.get('/', (req, res) => {
