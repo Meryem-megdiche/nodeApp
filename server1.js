@@ -29,20 +29,22 @@ const Alert = require('./models/Alert');
 
 
 
-const allowedOrigins = ['http://localhost:3000', 'https://react-app-7or7.vercel.app'];
+const allowedOrigins = '*';
 app.use(cors({
   origin: allowedOrigins
 }));
 app.use(cors({
   origin: function(origin, callback) {
-    if (allowedOrigins.includes(origin)) {
+    if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
     }
   }
 }));
-
+app.use(cors({
+  origin: allowedOrigins
+}));
 const {
   generateInterventionReport, // Une seule fois
   createFullReport}= require('./services/reportService');
