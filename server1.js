@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const app = express(); // Initialize Express app
 const mongoose = require('mongoose');
 const nodemailer = require('nodemailer');
@@ -14,7 +15,6 @@ const equipRoute = require("./routes/equip.routes");
 const userRoute = require("./routes/user.routes");
 const authRoute = require("./routes/auth.routes");
 const configRoute = require("./routes/config.routes");
-const cors = require('cors');
 const pingAndStore = require('./services/pingtest');
 const interventionRoute = require("./routes/intervention.routes");
 const Intervention = require("./models/intervention")
@@ -27,24 +27,6 @@ const { evaluateEquipmentAfterIntervention } = require('./services/pingtest');
 const Alert = require('./models/Alert');
 
 
-
-
-const allowedOrigins = '*';
-app.use(cors({
-  origin: allowedOrigins
-}));
-app.use(cors({
-  origin: function(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  }
-}));
-app.use(cors({
-  origin: allowedOrigins
-}));
 const {
   generateInterventionReport, // Une seule fois
   createFullReport}= require('./services/reportService');
@@ -59,12 +41,18 @@ if (!fs.existsSync(saveDirectory)) {
 // Créez ensuite le PDF avec PDFKit ou toute autre bibliothèque
 const doc = new PDFDocument();
 doc.pipe(fs.createWriteStream(fullPath));
-doc.text('Hello ');
+doc.text('Hello World!');
 doc.end();
 
+  // Middleware to process JSON data
   app.use(express.json());
 
-
+// Autoriser toutes les origines
+const allowedOrigins = '*';
+// Ajouter le middleware CORS à votre application Express
+app.use(cors({
+  origin: allowedOrigins
+}));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.get('/', (req, res) => {
@@ -170,11 +158,15 @@ app.get('/api/pingResults/stats/:equipmentId', async (req, res) => {
     let stats = { green: 0, orange: 0, red: 0 };
 
     // Calculer les seuils d'alerte et de pré-alerte
-    const warningThreshold = parseFloat(threshold) * 0.9; 
+    const warningThreshold = parseFloat(threshold) * 0.9; // Seuil d'avertissement est fixé à 90% du seuil principal
 
     console.log('Warning Threshold:', warningThreshold);
+
+    // Calculer les statistiques
+
+// Utilisez `pingResults` pour accéder aux résultats de la requête
 pingResults.forEach(result => {
-  const value = result[attr]; 
+  const value = result[attr]; // Utilisez `result` pour accéder à la valeur de l'attribut
   console.log(`Processing result - Data: ${attr}, Value: ${value}`);
   if (value >= parseFloat(threshold)) {
     console.log('Value is above threshold');
@@ -188,7 +180,10 @@ pingResults.forEach(result => {
   }
 });
 
- console.log('Final Stats:', stats);
+
+    console.log('Final Stats:', stats);
+
+    // Renvoyer les statistiques au format JSON
     res.json(stats);
   } catch (error) {
     console.error('Error fetching ping results:', error);
@@ -197,6 +192,7 @@ pingResults.forEach(result => {
 });
 
 
+// Route pour filtrer les interventions en fonction des équipements sélectionnés et de la plage de dates
 app.post('/api/interventions/filter', async (req, res) => {
   try {
     const { startDate, endDate, equipmentIds } = req.body;
@@ -204,8 +200,11 @@ app.post('/api/interventions/filter', async (req, res) => {
     if (!startDate || !endDate || !equipmentIds) {
       return res.status(400).json({ error: 'Start date, end date, and equipment IDs are required' });
     }
+
+    // Convertir les identifiants d'équipement en ObjectId MongoDB
     const equipmentObjectIds = equipmentIds.map(id => new mongoose.Types.ObjectId(id));
 
+    // Récupérer les interventions correspondant aux équipements sélectionnés et à la plage de dates spécifiée
     const interventions = await Intervention.find({
       equipment: { $in: equipmentObjectIds },
       date: { $gte: new Date(startDate), $lte: new Date(endDate) }
@@ -610,6 +609,21 @@ app.post('/api/ttlStats', async (req, res) => {
 });
 
 
+app.get('/pays', async (req, res) => {
+  try {
+    const aggregation = await Equip.aggregate([
+      {
+        $group: {
+          _id: "$Pays",
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+    res.json(aggregation.map(item => ({ id: item._id, value: item.count })));
+  } catch (error) {
+    res.status(500).json({ message: "Erreur lors de la récupération des données", error });
+  }
+});
 
 app.post('/api/reports/generateDashboardPDF', async (req, res) => {
   const { startDate, endDate, equipments, data } = req.body;
