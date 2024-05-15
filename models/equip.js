@@ -29,7 +29,7 @@ const equipSchema = new mongoose.Schema({
   ConnecteA: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Equip',
-    required: false,
+  
   }],
  
 });
