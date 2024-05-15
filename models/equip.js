@@ -28,12 +28,10 @@ const equipSchema = new mongoose.Schema({
 
   ConnecteA: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Equip'
-  }],
-  Port: {
-    type: String,
+    ref: 'Equip',
     required: false,
-  },
+  }],
+ 
 });
 
 module.exports = mongoose.model("Equip", equipSchema);
