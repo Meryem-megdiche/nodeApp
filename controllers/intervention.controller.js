@@ -32,7 +32,10 @@ module.exports = class InterventionController {
         const { type, description, equipment, date, parentIntervention} = req.body;
         // Assurez-vous que parentIntervention est null si elle est une chaîne vide
         const formattedParentIntervention = parentIntervention === "" ? null : parentIntervention;
-    
+      // Assurez-vous que l'ID de l'équipement est valide
+      if (!mongoose.Types.ObjectId.isValid(equipment)) {
+        return res.status(400).json({ error: "Invalid equipment ID" });
+    }
         const newIntervention = new Intervention({
           type,
           description,
