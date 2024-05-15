@@ -1,6 +1,7 @@
 const InterventionService = require("../services/interventionService");
 const Intervention = require("../models/intervention"); // Ensure this is correctly pointing to the Intervention model file
 const eventEmitter = require('../services/event-emitter');
+const mongoose = require('mongoose');
 
 module.exports = class InterventionController {
     static async apiGetAllInterventions(req, res) {
@@ -30,12 +31,13 @@ module.exports = class InterventionController {
     static async apiCreateIntervention(req, res, next) {
       try {
         const { type, description, equipment, date, parentIntervention} = req.body;
+        if (!mongoose.Types.ObjectId.isValid(equipment)) {
+            return res.status(400).json({ error: "Invalid equipment ID" });
+        }
         // Assurez-vous que parentIntervention est null si elle est une chaîne vide
         const formattedParentIntervention = parentIntervention === "" ? null : parentIntervention;
       // Assurez-vous que l'ID de l'équipement est valide
-      if (!mongoose.Types.ObjectId.isValid(equipment)) {
-        return res.status(400).json({ error: "Invalid equipment ID" });
-    }
+    
         const newIntervention = new Intervention({
           type,
           description,
@@ -43,7 +45,6 @@ module.exports = class InterventionController {
           date,
           parentIntervention: formattedParentIntervention,
         
-         
         });
     
         const savedIntervention = await newIntervention.save();
