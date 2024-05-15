@@ -2,6 +2,26 @@ const equipService = require("../services/equipService");
 const { isValidIPv4 } = require('net');
 module.exports = class equip {
 
+
+    static async apiGetEquipByRfid(req, res) {
+        try {
+          const rfid = req.params.rfid;
+          const equip = await equipService.getEquipByRfid(rfid);
+          if (equip) {
+            res.json({ success: true, equipment: equip });
+          } else {
+            res.json({ success: false, message: "Équipement non trouvé" });
+          }
+        } catch (error) {
+          console.error("Erreur lors de la recherche de l'équipement :", error);
+          res.status(500).json({ success: false, message: "Erreur du serveur" });
+        }
+      }
+
+
+
+
+
     static async apiGetAllequips(req, res, next) {
         try {
             const equips = await equipService.getAllequips();
