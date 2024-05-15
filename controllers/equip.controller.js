@@ -52,7 +52,7 @@ module.exports = class equip {
                 Emplacement: req.body.Emplacement,
                 Etat: req.body.Etat,
                 ConnecteA: req.body.ConnecteA,
-                Port: req.body.Port,
+              
                 RFID: req.body.RFID,
             };
     

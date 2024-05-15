@@ -54,7 +54,7 @@ app.use(cors({
   origin: allowedOrigins
 }));
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 app.get('/', (req, res) => {
   res.send('hello world');
 });
@@ -784,7 +784,7 @@ const port = process.env.PORT || 3001;
 // After setting up your server and io
 const io = socketIO(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "*",
     methods: ["GET", "POST"]
   }
 });

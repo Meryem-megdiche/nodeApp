@@ -21,7 +21,7 @@ module.exports = class equipService {
                 Emplacement :data.Emplacement,
                 Etat :data.Etat,
                 ConnecteA:data.ConnecteA,
-                Port:data.Port,
+              
                 RFID:data.RFID,
               
             };
