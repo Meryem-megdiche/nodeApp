@@ -29,7 +29,7 @@ module.exports = class InterventionController {
 
     static async apiCreateIntervention(req, res, next) {
       try {
-        const { type, description, equipment, date, parentIntervention, statut, evaluated } = req.body;
+        const { type, description, equipment, date, parentIntervention,  evaluated } = req.body;
         // Assurez-vous que parentIntervention est null si elle est une chaîne vide
         const formattedParentIntervention = parentIntervention === "" ? null : parentIntervention;
     
@@ -39,7 +39,7 @@ module.exports = class InterventionController {
           equipment,
           date,
           parentIntervention: formattedParentIntervention,
-          statut,
+        
           evaluated
         });
     
@@ -59,9 +59,9 @@ module.exports = class InterventionController {
     static async apiUpdateIntervention(req, res) {
         try {
             const interventionId = req.params.id;
-            const { type, description, equipment, date, parentIntervention, statut, evaluated } = req.body;
+            const { type, description, equipment, date, parentIntervention,  evaluated } = req.body;
             const updateResponse = await InterventionService.updateIntervention(interventionId, {
-                type, description, equipment, date, parentIntervention, statut, evaluated
+                type, description, equipment, date, parentIntervention,  evaluated
             });
             if (updateResponse.nModified === 0) {
                 throw new Error("Unable to update intervention, error occurred");
