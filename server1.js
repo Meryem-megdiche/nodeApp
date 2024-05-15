@@ -30,19 +30,9 @@ const Alert = require('./models/Alert');
 const {
   generateInterventionReport, // Une seule fois
   createFullReport}= require('./services/reportService');
-  const saveDirectory = path.join(__dirname, 'reports');
-const filename = 'dashboard-report-' + Date.now() + '.pdf';
-const fullPath = path.join(saveDirectory, filename);
-// Assurez-vous que le répertoire existe
-if (!fs.existsSync(saveDirectory)) {
-  fs.mkdirSync(saveDirectory, { recursive: true });
-}
 
-// Créez ensuite le PDF avec PDFKit ou toute autre bibliothèque
-const doc = new PDFDocument();
-doc.pipe(fs.createWriteStream(fullPath));
-doc.text('Hello World!');
-doc.end();
+
+
 
   // Middleware to process JSON data
   app.use(express.json());
