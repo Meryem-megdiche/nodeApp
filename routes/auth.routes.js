@@ -7,10 +7,11 @@ const authMiddleware = require("../middlewares/checkAuth");
 // Renommez 'controtller' en 'controller' ici pour corriger l'orthographe
 const controller = require('../controllers/auth.controller');
 
-router.get('/logout', controller.logout);
+
 // Utilisez maintenant 'controller' au lieu de 'controtller'
 router.post('/signup', controller.signUp);
 router.post('/login', controller.Login);
+router.get('/logout', controller.logout);
 router.get("/all", async (req, res) => {
   const users = await User.find();
   res.json(users);

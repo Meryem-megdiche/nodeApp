@@ -778,6 +778,12 @@ const io = socketIO(server, {
     methods: ["GET", "POST"]
   }
 });
+io.on('connection', (socket) => {
+  console.log('New client connected');
+  socket.on('disconnect', () => {
+    console.log('Client disconnected');
+  });
+});
 
 require('./services/pingtest').setIO(io);
 server.listen(port, () => {

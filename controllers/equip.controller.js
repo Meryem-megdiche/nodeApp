@@ -1,5 +1,6 @@
 const equipService = require("../services/equipService");
 const { isValidIPv4 } = require('net');
+const { io } = require('../server1');
 module.exports = class equip {
 
 
@@ -116,10 +117,12 @@ module.exports = class equip {
             }
     
             const updatedEquip = await equipService.updateequip(equipId, updateData);
+            
             if (!updatedEquip) {
                 return res.status(404).json({ success: false, message: "Aucun équipement trouvé avec l'ID fourni." });
             }
             res.json({ success: true, message: "Équipement mis à jour avec succès.", data: updatedEquip });
+            io.emit('inventoryUpdate', updateData);
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
