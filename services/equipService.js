@@ -109,6 +109,4 @@ module.exports = class equipService {
             console.log(`Could not delete equip ${error}`);
             throw error; // Rethrow the error to handle it in the calling code
         }
-    }
-
-};  
+    }};  
