@@ -34,6 +34,7 @@ const {
 
 
 
+
   // Middleware to process JSON data
   app.use(express.json());
 
@@ -55,6 +56,21 @@ app.use('/auth', authRoute);
 app.use('/api/interventions', interventionRoute);
 app.use("/config", configRoute )
 app.use('/reports', express.static('reports'));
+
+
+
+
+
+let scannedEquipments = [];
+
+app.get('/scannedEquipments', (req, res) => {
+  res.json(scannedEquipments);
+});
+
+app.post('/scannedEquipments', (req, res) => {
+  scannedEquipments = req.body;
+  res.sendStatus(200);
+});
  
 app.post('/api/reports/generate', async (req, res) => {
   try {
@@ -777,12 +793,6 @@ const io = socketIO(server, {
     origin: "*",
     methods: ["GET", "POST"]
   }
-});
-io.on('connection', (socket) => {
-  console.log('New client connected');
-  socket.on('disconnect', () => {
-    console.log('Client disconnected');
-  });
 });
 
 require('./services/pingtest').setIO(io);
