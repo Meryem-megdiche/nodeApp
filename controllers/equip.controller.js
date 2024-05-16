@@ -138,4 +138,14 @@ module.exports = class equip {
             res.status(500).json({ error: error });
         }
     }
+
+    static async apiUpdateTopology(req, res) {
+        try {
+            const { sourceId, targetId } = req.body;
+            const updatedEquipment = await equipService.updateTopology(sourceId, targetId);
+            res.json(updatedEquipment);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
 };
