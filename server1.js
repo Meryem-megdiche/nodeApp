@@ -788,7 +788,6 @@ app.get('/api/pingResults', async (req, res) => {
 });*/
 
 
-
 const port = process.env.PORT || 3001;
 // After setting up your server and io
 const io = socketIO(server, {

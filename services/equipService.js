@@ -111,20 +111,4 @@ module.exports = class equipService {
         }
     }
 
-    static async updateTopology(sourceId, targetId) {
-        try {
-            const sourceEquipment = await equip.findById(sourceId);
-            if (!sourceEquipment) {
-                throw new Error(`Équipement source non trouvé avec l'ID: ${sourceId}`);
-            }
-            if (!sourceEquipment.ConnecteA.includes(targetId)) {
-                sourceEquipment.ConnecteA.push(targetId);
-                await sourceEquipment.save();
-            }
-            return sourceEquipment;
-        } catch (error) {
-            console.log(`Erreur lors de la mise à jour de la topologie: ${error}`);
-            throw error;
-        }
-    }
 };  
