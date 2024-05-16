@@ -757,7 +757,7 @@ app.get('/api/pingResults', async (req, res) => {
 });
 
 // À ajouter dans server1.js
-app.get('/api/topologie', async (req, res) => {
+/*app.get('/api/topologie', async (req, res) => {
   try {
     const equipements = await Equip.find().populate('ConnecteA');
     const topologie = equipements.map(equip => {
@@ -783,7 +783,7 @@ app.get('/api/topologie', async (req, res) => {
     console.error('Error fetching network topology:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
-});
+});*/
 
 
 const port = process.env.PORT || 3001;
