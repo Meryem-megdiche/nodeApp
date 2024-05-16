@@ -11,27 +11,24 @@ const equipSchema = new mongoose.Schema({
   },
   AdresseIp: {
     type: String,
-    required: false,
+    required: true,
   },
   RFID: {
     type: String,
-    required: false,
+    required: true,
   },
   Emplacement: {
     type: String,
-    required: false,
+    required: true,
   },
   Etat: {
     type: String,
     required: false,
   },
-
   ConnecteA: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Equip',
-  
-  }],
- 
+    ref: 'Equip'
+  }]
 });
 
 module.exports = mongoose.model("Equip", equipSchema);

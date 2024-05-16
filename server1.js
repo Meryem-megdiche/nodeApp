@@ -72,6 +72,12 @@ app.post('/scannedEquipments', (req, res) => {
   res.sendStatus(200);
 });
  
+app.post('/resetScannedEquipments', (req, res) => {
+  scannedEquipments = [];
+  res.sendStatus(200);
+});
+ 
+
 app.post('/api/reports/generate', async (req, res) => {
   try {
       const { startDate, endDate, equipmentIds } = req.body;
@@ -757,7 +763,7 @@ app.get('/api/pingResults', async (req, res) => {
 });
 
 // À ajouter dans server1.js
-/*app.get('/api/topologie', async (req, res) => {
+app.get('/api/topologie', async (req, res) => {
   try {
     const equipements = await Equip.find().populate('ConnecteA');
     const topologie = equipements.map(equip => {
@@ -783,7 +789,7 @@ app.get('/api/pingResults', async (req, res) => {
     console.error('Error fetching network topology:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
-});*/
+});
 
 
 const port = process.env.PORT || 3001;
