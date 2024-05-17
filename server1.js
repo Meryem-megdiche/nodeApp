@@ -740,20 +740,17 @@ app.get('/api/pingResults', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-const io = initializeSocketIO(server);
+
 const port = process.env.PORT || 3001;
 
-
+const io = socketIO(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
 
 require('./services/pingtest').setIO(io);
-server.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-
-  //Configurez le reste des événements de socket après que le serveur écoute
-  eventEmitter.on('newAlert', (alert) => {
-    io.emit('newAlert', alert);
-  });
-});
 
 
 
@@ -774,7 +771,25 @@ mongoose
   .connect('mongodb+srv://erijbenamor6:adminadmin@erijapi.9b6fc2g.mongodb.net/Node-API?retryWrites=true&w=majority')
   .then(() => {
     console.log('Connected to MongoDB');
+    const io = initializeSocketIO(server);
+
+    server.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
     
+      //Configurez le reste des événements de socket après que le serveur écoute
+      eventEmitter.on('newAlert', (alert) => {
+        io.emit('newAlert', alert);
+      });
+
+    });
+    
+
+
+
+
+
+
+
     //Schedule pingAllEquipments every 2 minutes using cron
     cron.schedule('*/50 * * * *', async () => {
       try {

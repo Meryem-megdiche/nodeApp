@@ -22,9 +22,9 @@ module.exports = class equipService {
                 await equipment.save();
             }
 
-            // Emit updated equipment list
-            const updatedEquipments = await equip.find();
-            eventEmitter.emit('equipmentUpdated', updatedEquipments);
+            const updatedEquipments = await equip.find().populate('ConnecteA');
+            const io = getIO();
+            io.emit('equipmentUpdated', updatedEquipments);
 
             return equipment;
         } catch (error) {

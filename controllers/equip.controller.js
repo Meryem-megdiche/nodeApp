@@ -2,25 +2,16 @@ const equipService = require("../services/equipService");
 const { isValidIPv4 } = require('net');
 
 module.exports = class equip {
-
-
-
     static async apiScanRFID(req, res) {
         try {
             const { rfid, connectToRfid } = req.body;
             const equipment = await equipService.scanAndInstallRFID(rfid, connectToRfid);
             res.json({ success: true, equipment });
         } catch (error) {
-            console.error("Error during RFID scan and install:", error);
-            res.status(500).json({ success: false, message: "Server error" });
+            console.error('Error in apiScanRFID:', error);
+            res.status(500).json({ success: false, message: error.message });
         }
     }
-
-
-
-
-
-
 
     static async apiGetEquipByRfid(req, res) {
         try {
