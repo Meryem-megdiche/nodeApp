@@ -2,6 +2,41 @@ const equip = require("../models/equip");
 const cron = require('node-cron');
 
 module.exports = class equipService {
+
+
+    static async scanAndInstallRFID(rfid, connectToRfid = null) {
+        try {
+            // Rechercher l'équipement par RFID
+            const equipment = await equip.findOne({ RFID: rfid });
+            if (!equipment) {
+                throw new Error(`Equipment with RFID ${rfid} not found`);
+            }
+
+            if (connectToRfid) {
+                // Rechercher l'équipement à connecter
+                const connectToEquipment = await equip.findOne({ RFID: connectToRfid });
+                if (!connectToEquipment) {
+                    throw new Error(`Equipment with RFID ${connectToRfid} to connect not found`);
+                }
+
+                // Ajouter l'équipement connecté
+                equipment.ConnecteA.push(connectToEquipment._id);
+                await equipment.save();
+            }
+
+            return equipment;
+        } catch (error) {
+            console.log(`Error during RFID scan and install ${error}`);
+            throw error;
+        }
+    }
+
+
+
+
+
+
+
     
     static async getAllequips() {
         try {

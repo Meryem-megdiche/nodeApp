@@ -4,6 +4,24 @@ const { isValidIPv4 } = require('net');
 module.exports = class equip {
 
 
+
+    static async apiScanRFID(req, res) {
+        try {
+            const { rfid, connectToRfid } = req.body;
+            const equipment = await equipService.scanAndInstallRFID(rfid, connectToRfid);
+            res.json({ success: true, equipment });
+        } catch (error) {
+            console.error("Error during RFID scan and install:", error);
+            res.status(500).json({ success: false, message: "Server error" });
+        }
+    }
+
+
+
+
+
+
+
     static async apiGetEquipByRfid(req, res) {
         try {
           const rfid = req.params.rfid;
