@@ -1,14 +1,7 @@
 const equip = require("../models/equip");
 const cron = require('node-cron');
-const io = socketIO(server, {
-    cors: {
-      origin: "*",
-      methods: ["GET", "POST"]
-    }
-  });
-  eventEmitter.on('equipmentUpdated', (updatedEquipments) => {
-    io.emit('equipmentUpdated', updatedEquipments);
-  });
+
+const  getIO  = require('../models/socket');
 module.exports = class equipService {
 
 

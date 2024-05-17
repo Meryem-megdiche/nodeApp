@@ -1,10 +1,10 @@
 const express = require('express');
 const cors = require('cors');
-const app = express(); // Initialize Express app
+const app = express(); 
 const mongoose = require('mongoose');
 const nodemailer = require('nodemailer');
 const http = require('http');
-const server = http.createServer(app); // Remplace "app" par ton application Express si tu en as une
+const server = http.createServer(app);
 const socketIO = require('socket.io');
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
@@ -21,12 +21,11 @@ const Intervention = require("./models/intervention")
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger-output.json');
 const Equip = require ("./models/equip")
-const Config = require('./models/config'); // Assurez-vous que le chemin est correct
+const Config = require('./models/config'); 
 const eventEmitter = require('./services/event-emitter');
 const { evaluateEquipmentAfterIntervention } = require('./services/pingtest');
 const Alert = require('./models/Alert');
-
-
+const { initializeSocketIO, getIO } = require('./models/socket');
 const {
   generateInterventionReport, // Une seule fois
   createFullReport}= require('./services/reportService');
@@ -741,15 +740,10 @@ app.get('/api/pingResults', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
+const io = initializeSocketIO(server);
 const port = process.env.PORT || 3001;
 
-const io = socketIO(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
-  }
-});
+
 
 require('./services/pingtest').setIO(io);
 server.listen(port, () => {
@@ -761,13 +755,20 @@ server.listen(port, () => {
   });
 });
 
-module.exports = { app, server, io }; 
 
-// After initializing `io`
+
+
+
+eventEmitter.on('equipmentUpdated', (updatedEquipments) => {
+  io.emit('equipmentUpdated', updatedEquipments);
+});
+
+
+
 eventEmitter.on('newAlert', (alert) => {
   io.emit('newAlert', alert);
 });
-
+module.exports = { app, server, io }; 
 
 mongoose
   .connect('mongodb+srv://erijbenamor6:adminadmin@erijapi.9b6fc2g.mongodb.net/Node-API?retryWrites=true&w=majority')
