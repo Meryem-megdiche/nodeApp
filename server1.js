@@ -69,25 +69,27 @@ app.get('/scannedEquipments', (req, res) => {
 
 app.post('/scannedEquipments', async (req, res) => {
   const { equipment } = req.body;
-  console.log('New equipment scanned:', equipment);
+
+  console.log('Received new equipment:', equipment);
 
   // Notify all clients about the new equipment
   clients.forEach(client => {
     console.log('Notifying client:', client.req.ip);
     client.res.json(equipment);
   });
+  console.log('Notified all clients about the new equipment.');
   clients = [];
 
   res.sendStatus(200);
 });
  
 app.get('/events', (req, res) => {
-  console.log('Client connected for events:', req.ip);
+  console.log('New client connected for events:', req.ip);
   res.setHeader('Content-Type', 'application/json');
   clients.push({ req, res });
 
   req.on('close', () => {
-    console.log('Client disconnected:', req.ip);
+    console.log('Client disconnected from events:', req.ip);
     clients = clients.filter(client => client.req !== req);
   });
 });
