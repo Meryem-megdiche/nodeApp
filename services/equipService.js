@@ -1,45 +1,12 @@
 const equip = require("../models/equip");
 const cron = require('node-cron');
 
-const  getIO  = require('../models/socket');
+
 module.exports = class equipService {
 
 
-    static async scanAndInstallRFID(rfid, connectToRfid = null) {
-        try {
-            const equipment = await equip.findOne({ RFID: rfid });
-            if (!equipment) {
-                throw new Error(`Equipment with RFID ${rfid} not found`);
-            }
-
-            if (connectToRfid) {
-                const connectToEquipment = await equip.findOne({ RFID: connectToRfid });
-                if (!connectToEquipment) {
-                    throw new Error(`Equipment with RFID ${connectToRfid} to connect not found`);
-                }
-
-                equipment.ConnecteA.push(connectToEquipment._id);
-                await equipment.save();
-            }
-
-            const updatedEquipments = await equip.find().populate('ConnecteA');
-            const io = getIO();
-            io.emit('equipmentUpdated', updatedEquipments);
-
-            return equipment;
-        } catch (error) {
-            console.log(`Error during RFID scan and install ${error}`);
-            throw error;
-        }
-    }
-
-
-
-
-
-
-
     
+
     static async getAllequips() {
         try {
             const allequip = await equip.find();

@@ -1,10 +1,10 @@
 const express = require('express');
 const cors = require('cors');
-const app = express(); 
+const app = express(); // Initialize Express app
 const mongoose = require('mongoose');
 const nodemailer = require('nodemailer');
 const http = require('http');
-const server = http.createServer(app);
+const server = http.createServer(app); // Remplace "app" par ton application Express si tu en as une
 const socketIO = require('socket.io');
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
@@ -21,11 +21,12 @@ const Intervention = require("./models/intervention")
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger-output.json');
 const Equip = require ("./models/equip")
-const Config = require('./models/config'); 
+const Config = require('./models/config'); // Assurez-vous que le chemin est correct
 const eventEmitter = require('./services/event-emitter');
 const { evaluateEquipmentAfterIntervention } = require('./services/pingtest');
 const Alert = require('./models/Alert');
-const { initializeSocketIO, getIO } = require('./models/socket');
+
+
 const {
   generateInterventionReport, // Une seule fois
   createFullReport}= require('./services/reportService');
@@ -56,6 +57,26 @@ app.use('/api/interventions', interventionRoute);
 app.use("/config", configRoute )
 app.use('/reports', express.static('reports'));
 
+
+
+
+
+let scannedEquipments = [];
+
+app.get('/scannedEquipments', (req, res) => {
+  res.json(scannedEquipments);
+});
+
+app.post('/scannedEquipments', (req, res) => {
+  scannedEquipments = req.body;
+  res.sendStatus(200);
+});
+ 
+app.post('/resetScannedEquipments', (req, res) => {
+  scannedEquipments = [];
+  res.sendStatus(200);
+});
+ 
 
 app.post('/api/reports/generate', async (req, res) => {
   try {
@@ -741,8 +762,38 @@ app.get('/api/pingResults', async (req, res) => {
   }
 });
 
-const port = process.env.PORT || 3001;
+// À ajouter dans server1.js
+app.get('/api/topologie', async (req, res) => {
+  try {
+    const equipements = await Equip.find().populate('ConnecteA');
+    const topologie = equipements.map(equip => {
+      return {
+        id: equip._id,
+        nom: equip.Nom,
+        ip: equip.AdresseIp,
+        etat: equip.Etat,
+        Type:equip.Type,
+        connecteA: equip.ConnecteA.map(connexion => ({
+          id: connexion._id,
+          nom: connexion.Nom,
+          ip: connexion.AdresseIp,
+          etat: connexion.Etat,
+          Type:equip.Type,
+        })),
+        emplacement: equip.Emplacement,
+        port: equip.Port,
+      };
+    });
+    res.json(topologie);
+  } catch (error) {
+    console.error('Error fetching network topology:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
+
+const port = process.env.PORT || 3001;
+// After setting up your server and io
 const io = socketIO(server, {
   cors: {
     origin: "*",
@@ -751,45 +802,28 @@ const io = socketIO(server, {
 });
 
 require('./services/pingtest').setIO(io);
+server.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 
-
-
-
-
-eventEmitter.on('equipmentUpdated', (updatedEquipments) => {
-  io.emit('equipmentUpdated', updatedEquipments);
+  //Configurez le reste des événements de socket après que le serveur écoute
+  eventEmitter.on('newAlert', (alert) => {
+    io.emit('newAlert', alert);
+  });
 });
 
+module.exports = { app, server, io }; 
 
-
+// After initializing `io`
 eventEmitter.on('newAlert', (alert) => {
   io.emit('newAlert', alert);
 });
-module.exports = { app, server, io }; 
+
 
 mongoose
   .connect('mongodb+srv://erijbenamor6:adminadmin@erijapi.9b6fc2g.mongodb.net/Node-API?retryWrites=true&w=majority')
   .then(() => {
     console.log('Connected to MongoDB');
-    const io = initializeSocketIO(server);
-
-    server.listen(port, () => {
-      console.log(`Server is running on port ${port}`);
     
-      //Configurez le reste des événements de socket après que le serveur écoute
-      eventEmitter.on('newAlert', (alert) => {
-        io.emit('newAlert', alert);
-      });
-
-    });
-    
-
-
-
-
-
-
-
     //Schedule pingAllEquipments every 2 minutes using cron
     cron.schedule('*/50 * * * *', async () => {
       try {
@@ -803,3 +837,4 @@ mongoose
   .catch((error) => {
     console.log('Error connecting to MongoDB:', error);
   });  
+
