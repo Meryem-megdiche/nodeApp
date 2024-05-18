@@ -19,6 +19,52 @@ module.exports = class equip {
         }
       }
 
+
+// Ajoutez cette méthode à votre contrôleur
+static async apiConnectEquipments(req, res) {
+    try {
+      const { sourceId, targetId } = req.body;
+  
+      // Mettre à jour l'équipement source
+      const sourceEquip = await equipService.getequipbyId(sourceId);
+      if (!sourceEquip) {
+        return res.status(404).json({ message: 'Source equipment not found' });
+      }
+  
+      if (!sourceEquip.ConnecteA.includes(targetId)) {
+        sourceEquip.ConnecteA.push(targetId);
+        await sourceEquip.save();
+      }
+  
+      // Mettre à jour l'équipement cible
+      const targetEquip = await equipService.getequipbyId(targetId);
+      if (!targetEquip) {
+        return res.status(404).json({ message: 'Target equipment not found' });
+      }
+  
+      if (!targetEquip.ConnecteA.includes(sourceId)) {
+        targetEquip.ConnecteA.push(sourceId);
+        await targetEquip.save();
+      }
+  
+      res.status(200).json({ message: 'Connection successfully updated' });
+    } catch (error) {
+      console.error("Error connecting equipments:", error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+  
+
+
+
+
+
+
+
+
+
+
+
     static async apiGetAllequips(req, res, next) {
         try {
             const equips = await equipService.getAllequips();

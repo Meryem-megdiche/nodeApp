@@ -14,6 +14,6 @@ router.put("/equip/:id", equipCtrl.apiUpdateequip);
 router.delete('/:id', equipCtrl.apiDeleteequip);
 router.get("/find/:rfid", equipCtrl.apiGetEquipByRfid);
 
-
+router.post('/connect', equipCtrl.apiConnectEquipments);
 
 module.exports =  router;
