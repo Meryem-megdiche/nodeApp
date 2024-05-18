@@ -59,7 +59,7 @@ app.use('/reports', express.static('reports'));
 
 
 
-
+let clients = [];
 
 let scannedEquipments = [];
 
@@ -67,17 +67,24 @@ app.get('/scannedEquipments', (req, res) => {
   res.json(scannedEquipments);
 });
 
-app.post('/scannedEquipments', (req, res) => {
-  scannedEquipments = req.body;
-  res.sendStatus(200);
-});
- 
-app.post('/resetScannedEquipments', (req, res) => {
-  scannedEquipments = [];
-  res.sendStatus(200);
-});
- 
+app.post('/scannedEquipments', async (req, res) => {
+  const { equipment } = req.body;
 
+  // Notify all clients about the new equipment
+  clients.forEach(client => client.res.json(equipment));
+  clients = [];
+
+  res.sendStatus(200);
+});
+ 
+app.get('/events', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  clients.push({ req, res });
+
+  req.on('close', () => {
+    clients = clients.filter(client => client.req !== req);
+  });
+});
 app.post('/api/reports/generate', async (req, res) => {
   try {
       const { startDate, endDate, equipmentIds } = req.body;
