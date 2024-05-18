@@ -59,7 +59,6 @@ app.use('/reports', express.static('reports'));
 
 
 
-
 let scannedEquipments = [];
 
 app.get('/scannedEquipments', (req, res) => {
