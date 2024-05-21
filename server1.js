@@ -65,11 +65,11 @@ const io = socketIO(server, {
 
 let scannedEquipments = [];
 
-app.get('/', (req, res) => {
+app.get('/scannedEquipments', (req, res) => {
   res.json(scannedEquipments);
 });
 
-app.post('/', (req, res) => {
+app.post('/scannedEquipments', (req, res) => {
   scannedEquipments = req.body;
   res.sendStatus(200);
 });
