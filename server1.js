@@ -32,12 +32,7 @@ const {
   createFullReport}= require('./services/reportService');
 
 
-  const io = socketIO(server, {
-    cors: {
-      origin: "*",
-      methods: ["GET", "POST"]
-    }
-  });
+ 
 
 
   // Middleware to process JSON data
@@ -61,20 +56,24 @@ app.use('/auth', authRoute);
 app.use('/api/interventions', interventionRoute);
 app.use("/config", configRoute )
 app.use('/reports', express.static('reports'));
-
-
+const io = socketIO(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
 
 let scannedEquipments = [];
 
-app.get('/scannedEquipments', (req, res) => {
+app.get('/', (req, res) => {
   res.json(scannedEquipments);
 });
 
-app.post('/scannedEquipments', (req, res) => {
+app.post('/', (req, res) => {
   scannedEquipments = req.body;
   res.sendStatus(200);
 });
- 
+
 io.on('connection', (socket) => {
   console.log('New client connected');
 
@@ -82,16 +81,7 @@ io.on('connection', (socket) => {
     try {
       const equip = await Equip.findOne({ RFID: rfid }).populate('ConnecteA');
       if (equip) {
-        if (!scannedEquipments.some(e => e._id.equals(equip._id))) {
-          if (scannedEquipments.length > 0) {
-            const lastScannedEquipment = scannedEquipments[scannedEquipments.length - 1];
-            lastScannedEquipment.ConnecteA.push(equip._id);
-            await lastScannedEquipment.save();
-          }
-          scannedEquipments.push(equip);
-          await updateConnections(scannedEquipments);
-          io.emit('updateEquip', scannedEquipments);
-        }
+        io.emit('updateEquip', equip);
       } else {
         console.log(`Équipement avec RFID ${rfid} non trouvé`);
       }
@@ -99,16 +89,16 @@ io.on('connection', (socket) => {
       console.error('Erreur lors de la recherche de l\'équipement :', error);
     }
   });
+
   socket.on('disconnect', () => {
     console.log('Client disconnected');
   });
 });
-const updateConnections = async (equipments) => {
-  for (let i = 0; i < equipments.length - 1; i++) {
-    equipments[i].ConnecteA.push(equipments[i + 1]._id);
-    await equipments[i].save();
-  }
-};
+
+eventEmitter.on('newAlert', (alert) => {
+  io.emit('newAlert', alert);
+});
+
 app.post('/api/reports/generate', async (req, res) => {
   try {
       const { startDate, endDate, equipmentIds } = req.body;
