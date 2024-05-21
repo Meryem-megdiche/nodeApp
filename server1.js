@@ -31,6 +31,11 @@ const {
   generateInterventionReport, // Une seule fois
   createFullReport}= require('./services/reportService');
 
+
+
+
+
+  // Middleware to process JSON data
   app.use(express.json());
 
 // Autoriser toutes les origines
@@ -51,35 +56,20 @@ app.use('/auth', authRoute);
 app.use('/api/interventions', interventionRoute);
 app.use("/config", configRoute )
 app.use('/reports', express.static('reports'));
-const io = socketIO(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
-  }
+
+
+
+let scannedEquipments = [];
+
+app.get('/scannedEquipments', (req, res) => {
+  res.json(scannedEquipments);
 });
 
-io.on('connection', (socket) => {
-  console.log('New client connected');
-
-  socket.on('scanEquip', async (rfid) => {
-    try {
-      const equip = await Equip.findOne({ RFID: rfid }).populate('ConnecteA');
-      if (equip) {
-        io.emit('updateEquip', equip);
-      } else {
-        console.log(`Équipement avec RFID ${rfid} non trouvé`);
-      }
-    } catch (error) {
-      console.error('Erreur lors de la recherche de l\'équipement :', error);
-    }
-  });
-
-  socket.on('disconnect', () => {
-    console.log('Client disconnected');
-  });
+app.post('/scannedEquipments', (req, res) => {
+  scannedEquipments = req.body;
+  res.sendStatus(200);
 });
-
-
+ 
 
 app.post('/api/reports/generate', async (req, res) => {
   try {
@@ -796,10 +786,13 @@ app.get('/api/topologie', async (req, res) => {
 
 
 const port = process.env.PORT || 3001;
-
-
-
-
+// After setting up your server and io
+const io = socketIO(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
 
 require('./services/pingtest').setIO(io);
 server.listen(port, () => {

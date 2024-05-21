@@ -2,18 +2,7 @@ const equipService = require("../services/equipService");
 const { isValidIPv4 } = require('net');
 
 module.exports = class equip {
-    static async apiUpdateConnection(req, res) {
-        try {
-          const { equipId, connecteAId } = req.body;
-          const updatedEquip = await equipService.updateConnection(equipId, connecteAId);
-          res.json({ success: true, equipment: updatedEquip });
-        } catch (error) {
-          res.status(500).json({ error: error.message });
-        }
-      }
-      
-      
-      
+   
 
     static async apiGetEquipByRfid(req, res) {
         try {

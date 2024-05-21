@@ -4,23 +4,7 @@ const cron = require('node-cron');
 
 module.exports = class equipService {
 
-    static async updateConnection(equipId, connecteAId) {
-        try {
-          const equip = await Equip.findById(equipId);
-          if (equip) {
-            equip.ConnecteA.push(connecteAId);
-            await equip.save();
-            return equip;
-          } else {
-            throw new Error('Équipement non trouvé');
-          }
-        } catch (error) {
-          console.error('Erreur lors de la mise à jour des connexions :', error);
-          throw error;
-        }
-      }
-      
-      
+
     
 
     static async getAllequips() {
