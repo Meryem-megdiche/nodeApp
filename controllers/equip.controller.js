@@ -37,7 +37,20 @@ module.exports = class equip {
         }
     }
 
+    static async apiGetScannedCountByDate(req, res) {
+        try {
+            const { date } = req.params;
+            const startDate = new Date(date);
+            const endDate = new Date(date);
+            endDate.setDate(endDate.getDate() + 1);
 
+            const count = await equipService.getScannedCountByDate(startDate, endDate);
+            res.status(200).json({ success: true, count });
+        } catch (error) {
+            console.error('Erreur lors de la récupération du compte des équipements scannés:', error);
+            res.status(500).json({ success: false, message: "Erreur du serveur" });
+        }
+    }
 
 
 
