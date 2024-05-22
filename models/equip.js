@@ -32,11 +32,6 @@ const equipSchema = new mongoose.Schema({
   dateScanned: {
     type: Date,
     default: null,
-  },
-  scannedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    default: null,
   }
 });
 

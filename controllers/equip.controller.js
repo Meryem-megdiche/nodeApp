@@ -5,12 +5,11 @@ module.exports = class equip {
 
     static async apiScanEquipment(req, res) {
         try {
-            const { rfid, userId } = req.body;
+            const { rfid } = req.body;
             const equipment = await equipService.getEquipByRfid(rfid);
 
             if (equipment) {
                 equipment.dateScanned = new Date();
-                equipment.scannedBy = userId;
                 await equipment.save();
                 res.status(200).json({ success: true, equipment });
             } else {
@@ -51,13 +50,6 @@ module.exports = class equip {
             res.status(500).json({ success: false, message: "Erreur du serveur" });
         }
     }
-
-
-
-
-
-
-
 
 
 
