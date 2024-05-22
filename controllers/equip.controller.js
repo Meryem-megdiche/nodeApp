@@ -2,6 +2,55 @@ const equipService = require("../services/equipService");
 const { isValidIPv4 } = require('net');
 
 module.exports = class equip {
+
+    static async apiScanEquipment(req, res) {
+        try {
+            const { rfid, userId } = req.body;
+            const equipment = await equipService.getEquipByRfid(rfid);
+
+            if (equipment) {
+                equipment.dateScanned = new Date();
+                equipment.scannedBy = userId;
+                await equipment.save();
+                res.status(200).json({ success: true, equipment });
+            } else {
+                res.status(404).json({ success: false, message: "Équipement non trouvé" });
+            }
+        } catch (error) {
+            console.error('Erreur lors du scan de l\'équipement:', error);
+            res.status(500).json({ success: false, message: "Erreur du serveur" });
+        }
+    }
+
+    static async apiGetScannedEquipmentsByDate(req, res) {
+        try {
+            const { date } = req.params;
+            const startDate = new Date(date);
+            const endDate = new Date(date);
+            endDate.setDate(endDate.getDate() + 1);
+
+            const equipments = await equipService.getScannedEquipmentsByDate(startDate, endDate);
+            res.status(200).json({ success: true, equipments });
+        } catch (error) {
+            console.error('Erreur lors de la récupération des équipements scannés:', error);
+            res.status(500).json({ success: false, message: "Erreur du serveur" });
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     static async apiGetEquipByRfid(req, res) {
         try {
             const rfid = req.params.rfid;

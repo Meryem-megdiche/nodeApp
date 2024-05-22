@@ -28,7 +28,16 @@ const equipSchema = new mongoose.Schema({
   ConnecteA: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Equip'
-  }]
+  }],
+  dateScanned: {
+    type: Date,
+    default: null,
+  },
+  scannedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null,
+  }
 });
 
 module.exports = mongoose.model("Equip", equipSchema);

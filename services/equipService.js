@@ -5,7 +5,16 @@ const cron = require('node-cron');
 module.exports = class equipService {
 
 
-    
+    static async getScannedEquipmentsByDate(startDate, endDate) {
+        try {
+            const equipments = await equip.find({
+                dateScanned: { $gte: startDate, $lt: endDate }
+            });
+            return equipments;
+        } catch (error) {
+            console.log(`Could not fetch scanned equipments ${error}`);
+        }
+    }
 
     static async getAllequips() {
         try {

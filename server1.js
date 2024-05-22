@@ -63,6 +63,8 @@ const io = socketIO(server, {
   }
 });
 
+// Example in Express.js
+
 let scannedEquipments = [];
 
 app.get('/scannedEquipments', (req, res) => {
@@ -73,6 +75,7 @@ app.post('/scannedEquipments', (req, res) => {
   scannedEquipments = req.body;
   res.sendStatus(200);
 });
+
 
 io.on('connection', (socket) => {
   console.log('New client connected');
