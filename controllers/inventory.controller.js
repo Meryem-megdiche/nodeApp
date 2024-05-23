@@ -37,4 +37,13 @@ module.exports = class inventory {
             res.status(500).json({ success: false, message: "Erreur du serveur" });
         }
     }
+    static async apiGetAllInventories(req, res) {
+        try {
+            const inventories = await Inventory.find().sort({ date: -1 });
+            res.status(200).json(inventories);
+        } catch (error) {
+            console.error('Erreur lors de la récupération des inventaires:', error);
+            res.status(500).json({ success: false, message: "Erreur du serveur" });
+        }
+    }
 }
