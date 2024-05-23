@@ -63,7 +63,7 @@ const io = socketIO(server, {
   }
 });
 
-// Example in Express.js
+
 
 let scannedEquipments = [];
 

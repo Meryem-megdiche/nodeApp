@@ -7,12 +7,8 @@ const inventorySchema = new mongoose.Schema({
     required: true,
     default: Date.now,
   },
-  scannedEquipments: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Equip',
-  }],
-  technician: {
-    type: String, // Vous pouvez remplacer cela par un ObjectId si vous avez un modèle de technicien
+  scannedEquipmentsCount: {
+    type: Number,
     required: true,
   }
 });

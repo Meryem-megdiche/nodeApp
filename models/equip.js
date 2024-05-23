@@ -29,10 +29,7 @@ const equipSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Equip'
   }],
-  dateScanned: {
-    type: Date,
-    default: null,
-  }
+  
 });
 
 module.exports = mongoose.model("Equip", equipSchema);
