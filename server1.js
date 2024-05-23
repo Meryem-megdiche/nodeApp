@@ -25,7 +25,7 @@ const Config = require('./models/config'); // Assurez-vous que le chemin est cor
 const eventEmitter = require('./services/event-emitter');
 const { evaluateEquipmentAfterIntervention } = require('./services/pingtest');
 const Alert = require('./models/Alert');
-
+const inventoryRoute = require('./routes/inventory.routes');
 
 const {
   generateInterventionReport, // Une seule fois
@@ -56,6 +56,7 @@ app.use('/auth', authRoute);
 app.use('/api/interventions', interventionRoute);
 app.use("/config", configRoute )
 app.use('/reports', express.static('reports'));
+app.use('/inventory', inventoryRoute);
 const io = socketIO(server, {
   cors: {
     origin: "*",
