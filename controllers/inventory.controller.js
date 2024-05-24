@@ -5,13 +5,9 @@ module.exports = class inventory {
     static async apiFinishInventory(req, res) {
         try {
             const { scannedEquipments } = req.body;
-            const emailTechnician = req.user.email; 
-            console.log('Received scannedEquipments:', scannedEquipments);
-            console.log('Received technician:', emailTechnician);
 
             const newInventory = new Inventory({
                 scannedEquipmentsCount: scannedEquipments.length,
-                emailTechnician,
             });
 
             await newInventory.save();
