@@ -1,17 +1,10 @@
 const equip = require("../models/equip");
-const cron = require('node-cron');
-
 
 module.exports = class equipService {
-
-
     
-        
-    
-        
     static async getAllequips() {
         try {
-            const allequip = await equip.find();
+            const allequip = await equip.find().populate('ConnecteA');
             return allequip;
         } catch (error) {
             console.log(`Could not fetch equips ${error}`);
@@ -39,7 +32,7 @@ module.exports = class equipService {
 
           static async getequipbyId(equipId) {
             try {
-                const singleequipResponse = await equip.findById({ _id: equipId });
+                const singleequipResponse = await equip.findById({ _id: equipId }).populate('ConnecteA');
                 return singleequipResponse;
             } catch (error) {
                 console.log(`equip not found. ${error}`);
@@ -54,7 +47,8 @@ module.exports = class equipService {
                 throw error;
             }
         }
-        static async getEquipByIp(ip) {
+        static async getEquipByIp(ip)
+ {
             try {
                 const equipByIp = await equip.findOne({ AdresseIp: ip });
                 return equipByIp;
@@ -64,7 +58,7 @@ module.exports = class equipService {
         }
         static async getEquipByRfid(RFID) {
             try {
-                const equipByRfid = await equip.findOne({ RFID: RFID });
+                const equipByRfid = await equip.findOne({ RFID: RFID }).populate('ConnecteA');
                 return equipByRfid;
             } catch (error) {
                 console.log(`Could not fetch equip by RFID ${error}`);
@@ -94,19 +88,27 @@ module.exports = class equipService {
                     throw new Error(`Équipement déjà existant avec le RFID: ${updateData.RFID}`);
                 }
         
-                const updated = await equip.findOneAndUpdate({ _id: id }, updateData, { new: true });
-                if (!updated) {
-                    console.log(`No equipment found with ID ${id}`);
-                    return null;
+
+              
+                const existingEquip = await equip.findById(id)
+;
+                if (!existingEquip) {
+                    throw new Error(`No equipment found with ID ${id}`);
                 }
-                return updated;
+    
+                if (updateData.ConnecteA) {
+                    existingEquip.ConnecteA = updateData.ConnecteA;
+                }
+    
+                const updatedEquip = await existingEquip.save();
+                return updatedEquip;
             } catch (error) {
                 console.error('Error in updateequip:', error);
                 throw error;
             }
         }
-        
-
+    
+    
     static async deleteequip(equipId) {
         try {
             const deletedResponse = await equip.findOneAndDelete({ _id: equipId });

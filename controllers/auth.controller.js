@@ -6,12 +6,6 @@ const User= require("../models/user");
 
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
-function logout(req, res) {
-    res.clearCookie('token'); // Assurez-vous que le nom du cookie correspond à ce que vous avez configuré
-    res.status(200).json({
-        message: "Vous avez été déconnecté avec succès"
-    });
-}
 
 async function signUp(req, res) {
     try {
@@ -152,6 +146,5 @@ module.exports = {
     signUp,
     Login,
     forgotPassword,
-    resetPassword,
-    logout
+    resetPassword
 };

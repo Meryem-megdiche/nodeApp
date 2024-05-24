@@ -10,6 +10,10 @@ const inventorySchema = new mongoose.Schema({
   scannedEquipmentsCount: {
     type: Number,
     required: true,
+  },
+  technician: {
+    type: String, // Vous pouvez remplacer cela par un ObjectId si vous avez un modèle de technicien
+    required: true,
   }
 });
 

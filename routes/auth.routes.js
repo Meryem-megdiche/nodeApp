@@ -11,7 +11,7 @@ const controller = require('../controllers/auth.controller');
 // Utilisez maintenant 'controller' au lieu de 'controtller'
 router.post('/signup', controller.signUp);
 router.post('/login', controller.Login);
-router.get('/logout', controller.logout);
+
 router.get("/all", async (req, res) => {
   const users = await User.find();
   res.json(users);
