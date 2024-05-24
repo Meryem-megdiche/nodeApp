@@ -4,13 +4,14 @@ const Inventory = require("../models/inventory");
 module.exports = class inventory {
     static async apiFinishInventory(req, res) {
         try {
-            const { scannedEquipments, technician } = req.body;
+            const { scannedEquipments } = req.body;
+            const emailTechnician = req.user.email; 
             console.log('Received scannedEquipments:', scannedEquipments);
-            console.log('Received technician:', technician);
+            console.log('Received technician:', emailTechnician);
 
             const newInventory = new Inventory({
                 scannedEquipmentsCount: scannedEquipments.length,
-                technician,
+                emailTechnician,
             });
 
             await newInventory.save();

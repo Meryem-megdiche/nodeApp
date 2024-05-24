@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const inventoryCtrl = require("../controllers/inventory.controller");
-
-router.post("/finish", inventoryCtrl.apiFinishInventory);
+const authMiddleware = require("../middlewares/checkAuth");
+router.post("/finish", authMiddleware,inventoryCtrl.apiFinishInventory);
 router.get("/count/:date", inventoryCtrl.apiGetInventoryCountByDate);
 router.get("/", inventoryCtrl.apiGetAllInventories);
 module.exports = router;
