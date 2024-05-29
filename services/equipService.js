@@ -108,6 +108,19 @@ module.exports = class equipService {
             }
         }
     
+        static async updateequipe(id, updateData) {
+            try {
+                const updated = await equip.findOneAndUpdate({ _id: id }, updateData, { new: true });
+                if (!updated) {
+                    console.log(`No equipment found with ID ${id}`);
+                    return null;
+                }
+                return updated;
+            } catch (error) {
+                console.error('Error in updateequip:', error);
+                throw error;
+            }
+        }
     
     static async deleteequip(equipId) {
         try {

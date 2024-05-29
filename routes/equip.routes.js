@@ -9,6 +9,7 @@ router.post("/add", (req, res) => {
 });
 
 router.get("/equip/:id", equipCtrl.apiGetequipById);
+router.put("/equipe/:id", equipCtrl.apiUpdateequipe);
 router.put("/equip/:id", async (req, res) => {
   try {
     const { id } = req.params;

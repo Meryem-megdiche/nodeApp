@@ -125,7 +125,20 @@ module.exports = class equip {
         }
     }
     
-    
+    static async apiUpdateequipe(req, res) {
+        try {
+            const equipId = req.params.id;
+            const updateData = req.body;
+            
+            const updatedEquip = await equipService.updateequipe(equipId, updateData);
+            if (!updatedEquip) {
+                return res.status(404).json({ success: false, message: "Aucun équipement trouvé avec l'ID fourni." });
+            }
+            res.json({ success: true, message: "Équipement mis à jour avec succès.", data: updatedEquip });
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
     
     static async apiDeleteequip(req, res, next) {
         try {
