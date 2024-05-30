@@ -17,7 +17,8 @@ const equipSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  Emplacement: {
+ 
+Département: {
     type: String,
     required: true,
   },

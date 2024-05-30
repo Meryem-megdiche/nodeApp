@@ -69,7 +69,8 @@ module.exports = class equip {
                 Nom: req.body.Nom,
                 Type: req.body.Type,
                 AdresseIp: req.body.AdresseIp,
-                Emplacement: req.body.Emplacement,
+               
+                Département: req.body.Département,
                 Etat: req.body.Etat,
                 RFID: req.body.RFID,
             };

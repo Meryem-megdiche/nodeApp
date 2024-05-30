@@ -17,7 +17,8 @@ module.exports = class equipService {
                 Nom :data.Nom,
                 Type :data.Type,
                 AdresseIp : data.AdresseIp,
-                Emplacement :data.Emplacement,
+                
+                 Département :data.Département,
                 Etat :data.Etat,
               
                 RFID:data.RFID,
