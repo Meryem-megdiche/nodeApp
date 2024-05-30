@@ -165,8 +165,8 @@ app.post('/api/pingResults/equip/count', async (req, res) => {
 });
 
 app.get('/api/pingResults/stats/:equipmentId', async (req, res) => {
-  const { startDate, endDate, threshold, attr} = req.query;
-  const { equipmentId } = req.params;
+  const { startDate, endDate, threshold, attr } = req.query; 
+  const { equipmentId } = req.params; 
 
   console.log(`Request received - Equipment ID: ${equipmentId}, Start Date: ${startDate}, End Date: ${endDate}, Data: ${attr}, Threshold: ${threshold}`);
 
@@ -188,29 +188,40 @@ app.get('/api/pingResults/stats/:equipmentId', async (req, res) => {
     console.log('Ping Results:', pingResults);
 
     let stats = { green: 0, orange: 0, red: 0 };
-    const warningThreshold = parseFloat(threshold) * 0.9;
+
+    const warningThreshold = parseFloat(threshold) * 0.9; 
+
+    console.log('Warning Threshold:', warningThreshold);
+
+    const getAverage = (numbers) => {
+      if (!Array.isArray(numbers) || numbers.length === 0) return NaN;
+      const validNumbers = numbers.filter(value => !isNaN(value));
+      if (validNumbers.length === 0) return NaN;
+      return validNumbers.reduce((acc, cur) => acc + cur, 0) / validNumbers.length;
+    };
 
     pingResults.forEach(result => {
-      const values = result[attr];
-      if (Array.isArray(values)) {
-        const averageValue = values.reduce((acc, curr) => acc + curr, 0) / values.length;
-        console.log(`Processing result - Data: ${attr}, Average Value: ${averageValue}`);
-        if (averageValue >= parseFloat(threshold)) {
-          stats.red++;
-        } else if (averageValue >= warningThreshold && averageValue < parseFloat(threshold)) {
-          stats.orange++;
-        } else {
-          stats.green++;
-        }
+      let value = result[attr];
+      if (Array.isArray(value)) {
+        value = getAverage(value);
+      }
+
+      console.log(`Processing result - Data: ${attr}, Value: ${value}`);
+
+      // Check for empty or NaN values for TTL and latency
+      if ((['TTL', 'latency'].includes(attr) && (value === 0 || isNaN(value))) ||
+          (['minimumTime', 'maximumTime', 'averageTime'].includes(attr) && value === 0)) {
+        console.log(`Value is invalid for a critical attribute ${attr}`);
+        stats.red++;
+      } else if (value >= parseFloat(threshold)) {
+        console.log('Value is above threshold');
+        stats.red++;
+      } else if (value >= warningThreshold && value < parseFloat(threshold)) {
+        console.log('Value is above warning threshold but below main threshold');
+        stats.orange++;
       } else {
-        console.log(`Processing result - Data: ${attr}, Value: ${values}`);
-        if (values >= parseFloat(threshold)) {
-          stats.red++;
-        } else if (values >= warningThreshold && values < parseFloat(threshold)) {
-          stats.orange++;
-        } else {
-          stats.green++;
-        }
+        console.log('Value is within normal range');
+        stats.green++;
       }
     });
 
