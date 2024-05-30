@@ -165,20 +165,17 @@ app.post('/api/pingResults/equip/count', async (req, res) => {
 });
 
 app.get('/api/pingResults/stats/:equipmentId', async (req, res) => {
-  const { startDate, endDate, threshold, attr} = req.query; // Récupérer les valeurs de la requête
-  const { equipmentId } = req.params; // Récupérer l'ID de l'équipement
-  
+  const { startDate, endDate, threshold, attr} = req.query;
+  const { equipmentId } = req.params;
 
   console.log(`Request received - Equipment ID: ${equipmentId}, Start Date: ${startDate}, End Date: ${endDate}, Data: ${attr}, Threshold: ${threshold}`);
 
   try {
-    // Vérifier la présence et la validité des données de requête
     if (!equipmentId || !startDate || !endDate || !threshold || !attr) {
       console.log('Missing or invalid request parameters:', req.query);
       return res.status(400).json({ error: 'Missing or invalid request parameters' });
     }
 
-    // Construire la requête pour la base de données
     const query = {
       equipment: equipmentId,
       timestamp: { $gte: new Date(startDate), $lte: new Date(endDate) }
@@ -186,48 +183,45 @@ app.get('/api/pingResults/stats/:equipmentId', async (req, res) => {
 
     console.log('Query:', query);
 
-    // Exécuter la requête et récupérer les résultats
     const pingResults = await PingResult.find(query);
 
     console.log('Ping Results:', pingResults);
 
-    // Initialiser les compteurs pour les statistiques
     let stats = { green: 0, orange: 0, red: 0 };
+    const warningThreshold = parseFloat(threshold) * 0.9;
 
-    // Calculer les seuils d'alerte et de pré-alerte
-    const warningThreshold = parseFloat(threshold) * 0.9; // Seuil d'avertissement est fixé à 90% du seuil principal
-
-    console.log('Warning Threshold:', warningThreshold);
-
-    // Calculer les statistiques
-
-// Utilisez `pingResults` pour accéder aux résultats de la requête
-pingResults.forEach(result => {
-  const value = result[attr]; // Utilisez `result` pour accéder à la valeur de l'attribut
-  console.log(`Processing result - Data: ${attr}, Value: ${value}`);
-  if (value >= parseFloat(threshold)) {
-    console.log('Value is above threshold');
-    stats.red++;
-  } else if (value >= warningThreshold && value < parseFloat(threshold)) {
-    console.log('Value is above warning threshold but below main threshold');
-    stats.orange++;
-  } else {
-    console.log('Value is within normal range');
-    stats.green++;
-  }
-});
-
+    pingResults.forEach(result => {
+      const values = result[attr];
+      if (Array.isArray(values)) {
+        const averageValue = values.reduce((acc, curr) => acc + curr, 0) / values.length;
+        console.log(`Processing result - Data: ${attr}, Average Value: ${averageValue}`);
+        if (averageValue >= parseFloat(threshold)) {
+          stats.red++;
+        } else if (averageValue >= warningThreshold && averageValue < parseFloat(threshold)) {
+          stats.orange++;
+        } else {
+          stats.green++;
+        }
+      } else {
+        console.log(`Processing result - Data: ${attr}, Value: ${values}`);
+        if (values >= parseFloat(threshold)) {
+          stats.red++;
+        } else if (values >= warningThreshold && values < parseFloat(threshold)) {
+          stats.orange++;
+        } else {
+          stats.green++;
+        }
+      }
+    });
 
     console.log('Final Stats:', stats);
 
-    // Renvoyer les statistiques au format JSON
     res.json(stats);
   } catch (error) {
     console.error('Error fetching ping results:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
 
 // Route pour filtrer les interventions en fonction des équipements sélectionnés et de la plage de dates
 app.post('/api/interventions/filter', async (req, res) => {
