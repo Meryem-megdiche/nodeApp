@@ -32,6 +32,7 @@ const findFollowUps = async (parentId, seenInterventions = new Set()) => {
   return allFollowUps;
 };
 
+
 const generateInterventionReport = async (startDate, endDate, equipmentIds) => {
   const equipmentObjectIds = equipmentIds.map(id => new mongoose.Types.ObjectId(id));
   const parsedStartDate = new Date(startDate);
@@ -49,7 +50,9 @@ const generateInterventionReport = async (startDate, endDate, equipmentIds) => {
   let allInterventionsWithAlerts = [];
 
   for (const baseIntervention of baseInterventions) {
-    const followUps = await findFollowUps(baseIntervention._id, new Set([baseIntervention._id.toString()]));
+ 
+const followUps = await findFollowUps(baseIntervention._id, new Set([baseIntervention._id.toString()]));
+
 
     const allRelatedInterventions = [baseIntervention, ...followUps];
 
@@ -68,29 +71,31 @@ const generateInterventionReport = async (startDate, endDate, equipmentIds) => {
 };
 
 const createInterventionSummary = async (interventionWithAlerts) => {
-  let summary =
-    `### Equipment: ${interventionWithAlerts.equipment.Nom}\n\n` +
-    `**Intervention ID:** ${interventionWithAlerts._id}\n` +
-    `**Type:** ${interventionWithAlerts.type}\n` +
-    `**Description:** ${interventionWithAlerts.description}\n` +
-    `**Date:** ${formatDate(interventionWithAlerts.date)}\n`;
+  let summary = 
+  `Equipment: ${interventionWithAlerts.equipment.Nom}\n`+
+  `Intervention ID: ${interventionWithAlerts._id}\n` +
+    `Type: ${interventionWithAlerts.type}\n` +
+ 
+    `Description: ${interventionWithAlerts.description}\n` +
+    `Date: ${formatDate(interventionWithAlerts.date)}\n` ;
+    
 
   if (interventionWithAlerts.latency) {
-    summary += `**Average Latency:** ${interventionWithAlerts.latency}\n`;
+    summary += `Average Latency: ${interventionWithAlerts.latency}\n`;
   }
 
   const alertsSummary = interventionWithAlerts.alerts.map(alert => {
     let alertStatus = alert.status === 'dysfonctionnel' ? 'dysfonctionnel' : 'fonctionnel';
-    let resolvedStatus = alert.resolved ? ' est résolu le problème ' : "n'a pas résolu le problème ";
-    return `**Status de l'équipement:** ${alertStatus}\n**L'intervention:** ${resolvedStatus}\n**Date:** ${formatDate(alert.timestamp)}\n`;
+    let resolvedStatus = alert.resolved ? ' est résolu le probléme ' : 'n a pas résolu le probléme ';
+    return `Status de l'équipement  est  ${alertStatus}\n L'intervention  ${resolvedStatus}\n Date: ${formatDate(alert.timestamp)}`;
   }).join("\n");
 
-  summary += alertsSummary.length > 0 ? `\n**Alerts:**\n${alertsSummary}` : "\n**No alerts**";
+  summary += alertsSummary.length > 0 ? `\nAlerts:\n${alertsSummary}` : "\nNo alerts";
 
   return summary + '\n\n';
 };
-
 function formatDate(date) {
+  // Format the date as per your preference, for example:
   return new Date(date).toLocaleDateString("fr-FR", {
     year: "numeric",
     month: "2-digit",
@@ -100,7 +105,6 @@ function formatDate(date) {
     second: "2-digit"
   });
 }
-
 function generatePDF(reportContent) {
   return new Promise((resolve, reject) => {
     const reportsDir = path.join(__dirname, '..', 'reports');
@@ -114,14 +118,7 @@ function generatePDF(reportContent) {
     doc.pipe(fs.createWriteStream(filePath))
       .on('finish', () => resolve(filePath))
       .on('error', (error) => reject(error));
-
-    doc.fontSize(20).text('Intervention Report', { align: 'center' }).moveDown(2);
-
-    doc.fontSize(12).text(reportContent, {
-      width: 500,
-      align: 'left',
-    });
-
+    doc.text(reportContent);
     doc.end();
   });
 }
