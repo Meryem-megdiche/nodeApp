@@ -38,6 +38,10 @@ const interventionSchema = new mongoose.Schema({
         required: false, // Seulement pour les interventions de suivi
         default: null
       },
+      adresseMail: {
+        type: String,
+        required:true,
+      },
   
 });
 

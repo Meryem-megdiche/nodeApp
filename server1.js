@@ -747,7 +747,6 @@ const sendAlertEmail = (to, equipmentName, equipmentId, dataType, currentValue, 
         <p>Une alerte de dépassement de seuil a été détectée pour l'équipement suivant, nécessitant une <strong>intervention immédiate</strong>:</p>
         <ul>
           <li><strong>Nom de l'Équipement:</strong> ${equipmentName}</li>
-          <li><strong>ID de l'Équipement:</strong> ${equipmentId}</li>
           <li><strong>Type de Donnée:</strong> ${dataType}</li>
           <li><strong>Valeur Actuelle:</strong> ${currentValue} ms</li>
           <li><strong>Seuil Dépassé:</strong> ${threshold} ms</li>
@@ -775,11 +774,11 @@ const sendAlertEmail = (to, equipmentName, equipmentId, dataType, currentValue, 
       console.log(`E-mail d'alerte envoyé à ${to} avec succès: ${info.response}`);
     }
   });
-};*///
+};*/
  //Planifier la surveillance pour s'exécuter à un intervalle régulier
-//cron.schedule('*/30    ', () => { // Toutes les 5 minutes par exemple
+///cron.schedule('*/2 * * * *', () => { // Toutes les 5 minutes par exemple
 //monitorAndAlert();
-//});
+//});*/
 
 app.get('/api/pingResults', async (req, res) => {
   try {

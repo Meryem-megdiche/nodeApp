@@ -30,7 +30,7 @@ module.exports = class InterventionController {
 
     static async apiCreateIntervention(req, res, next) {
       try {
-        const { type, description, equipment, date, parentIntervention} = req.body;
+        const { type, description, equipment, date, parentIntervention,adresseMail} = req.body;
         if (!mongoose.Types.ObjectId.isValid(equipment)) {
             return res.status(400).json({ error: "Invalid equipment ID" });
         }
@@ -44,7 +44,7 @@ module.exports = class InterventionController {
           equipment,
           date,
           parentIntervention: formattedParentIntervention,
-        
+          adresseMail
         });
     
         const savedIntervention = await newIntervention.save();
@@ -63,9 +63,9 @@ module.exports = class InterventionController {
     static async apiUpdateIntervention(req, res) {
         try {
             const interventionId = req.params.id;
-            const { type, description, equipment, date, parentIntervention } = req.body;
+            const { type, description, equipment, date, parentIntervention,adresseMail } = req.body;
             const updateResponse = await InterventionService.updateIntervention(interventionId, {
-                type, description, equipment, date, parentIntervention
+                type, description, equipment, date, parentIntervention,adresseMail
             });
             if (updateResponse.nModified === 0) {
                 throw new Error("Unable to update intervention, error occurred");
