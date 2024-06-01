@@ -490,11 +490,11 @@ const formatBarChartData = (data) => {
   }).filter((item) => item !== null);
 };
 const getColorByTTL = (TTL) => {
-  if (TTL < 56) {
+  if (TTL < 48) {
     return "green";
-  } else if (TTL >= 56 && TTL <= 113) {
+  } else if (TTL >= 48 && TTL <= 50) {
     return "orange";
-  } else if (TTL > 113) {
+  } else if (TTL >= 113) {
     return "red";
   } else {
     console.error("Unexpected TTL value:", TTL);
@@ -568,11 +568,11 @@ app.post('/api/erij', async (req, res) => {
       const averageTTL = result.TTL.reduce((sum, current) => sum + current, 0) / result.TTL.length;
       const point = { x: new Date(result.timestamp).toISOString(), y: averageTTL };
   
-      if (averageTTL < 56) {
+      if (averageTTL < 48) {
         lines.normal.data.push(point);
-      } else if (averageTTL >= 56 && averageTTL <= 113) {
+      } else if (averageTTL >= 48 && averageTTL <= 50) {
         lines.passable.data.push(point);
-      } else if (averageTTL > 113) {
+      } else if (averageTTL >= 113) {
         lines.surpassed.data.push(point);
       }
     });
@@ -604,8 +604,8 @@ app.post('/api/ttlStats', async (req, res) => {
     ttlData.forEach(result => {
       if (result.TTL && result.TTL.length > 0) {
         const averageTTL = result.TTL.reduce((sum, current) => sum + current, 0) / result.TTL.length;
-        if (averageTTL < 56) stats.green++;
-        else if (averageTTL <= 113) stats.orange++;
+        if (averageTTL < 48) stats.green++;
+        else if (averageTTL <= 50 ) stats.orange++;
         else stats.red++;
       }
     });
