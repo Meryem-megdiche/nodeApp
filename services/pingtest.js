@@ -326,7 +326,7 @@ async function evaluateEquipmentAfterIntervention(interventionId) {
       io.emit('newAlert', {
         ...fullAlert.toObject(),
         equipmentId: equipmentId,
-        equipmentName: fullAlert.equipmentId.Nom, // Emitting the name instead of or alongside the ID
+        equipmentName: fullAlert.equipmentId.Nom, 
         alertType: 'Intervention',
         status: status,
         message: ` ${message}`, // Ajoutez le message à l'objet émis
