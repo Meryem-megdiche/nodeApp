@@ -67,10 +67,10 @@ const generateInterventionReport = async (startDate, endDate, equipmentIds) => {
   return allInterventionsWithAlerts;
 };
 
-const createInterventionSummary = async (interventionWithAlerts) => {
+const createInterventionSummary = async (interventionWithAlerts, index) => {
   let summary =
-    `Equipment: ${interventionWithAlerts.equipment.Nom}\n\n` +
-    
+    `Intervention ${index + 1}:\n` +
+    `Equipment: ${interventionWithAlerts.equipment.Nom}\n` +
     `Type: ${interventionWithAlerts.type}\n` +
     `Description: ${interventionWithAlerts.description}\n` +
     `Date: ${formatDate(interventionWithAlerts.date)}\n`;
@@ -126,8 +126,9 @@ function generatePDF(reportContent) {
 const createFullReport = async (interventionsWithAlerts) => {
   let fullReport = '';
 
-  for (const interventionWithAlerts of interventionsWithAlerts) {
-    const summary = await createInterventionSummary(interventionWithAlerts);
+  for (let i = 0; i < interventionsWithAlerts.length; i++) {
+    const interventionWithAlerts = interventionsWithAlerts[i];
+    const summary = await createInterventionSummary(interventionWithAlerts, i);
     fullReport += summary;
   }
 
