@@ -98,7 +98,7 @@ function formatDate(date) {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit"
-  });
+  }).replace(/(\d{2})\/(\d{2})\/(\d{4}), (\d{2}):(\d{2}):(\d{2})/, '$1/$2/$3 $4:$5:$6');
 }
 
 function generatePDF(reportContent) {
