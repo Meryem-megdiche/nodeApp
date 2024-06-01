@@ -329,7 +329,7 @@ async function evaluateEquipmentAfterIntervention(interventionId) {
         equipmentName: fullAlert.equipmentId.Nom, // Emitting the name instead of or alongside the ID
         alertType: 'Intervention',
         status: status,
-        message: `Intervention: ${equipmentName} - ${message}`, // Ajoutez le message à l'objet émis
+        message: ` ${message}`, // Ajoutez le message à l'objet émis
         timestamp: new Date()
       });
       console.log('Alert emitted for status:', status);
