@@ -490,11 +490,11 @@ const formatBarChartData = (data) => {
   }).filter((item) => item !== null);
 };
 const getColorByTTL = (TTL) => {
-  if (TTL < 48) {
+  if (TTL <= 46) {
     return "green";
-  } else if (TTL >= 48 && TTL <= 50) {
+  } else if (TTL > 46 && TTL <= 48) {
     return "orange";
-  } else if (TTL >= 113) {
+  } else if (TTL > 48 &&  TTL < 113) {
     return "red";
   } else {
     console.error("Unexpected TTL value:", TTL);
@@ -568,11 +568,11 @@ app.post('/api/erij', async (req, res) => {
       const averageTTL = result.TTL.reduce((sum, current) => sum + current, 0) / result.TTL.length;
       const point = { x: new Date(result.timestamp).toISOString(), y: averageTTL };
   
-      if (averageTTL < 48) {
+      if (averageTTL <= 46) {
         lines.normal.data.push(point);
-      } else if (averageTTL >= 48 && averageTTL <= 50) {
+      } else if (averageTTL > 46 && averageTTL <= 48) {
         lines.passable.data.push(point);
-      } else if (averageTTL >= 113) {
+      } else if (averageTTL > 48 && averageTTL < 113 ) {
         lines.surpassed.data.push(point);
       }
     });
@@ -604,40 +604,8 @@ app.post('/api/ttlStats', async (req, res) => {
     ttlData.forEach(result => {
       if (result.TTL && result.TTL.length > 0) {
         const averageTTL = result.TTL.reduce((sum, current) => sum + current, 0) / result.TTL.length;
-        if (averageTTL < 48) stats.green++;
-        else if (averageTTL <= 50 ) stats.orange++;
-        else stats.red++;
-      }
-    });
-
-    console.log('Computed stats:', stats);
-    res.json(stats);
-  } catch (error) {
-    console.error('Error fetching TTL stats:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
-app.post('/api/ttlStats', async (req, res) => {
-  const { equipmentIds, startDate, endDate } = req.body;
-
-  if (!equipmentIds || equipmentIds.length === 0 || !startDate || !endDate) {
-    console.error('Missing parameters:', { equipmentIds, startDate, endDate });
-    return res.status(400).json({ error: 'Missing parameters' });
-  }
-
-  try {
-    const ttlData = await PingResult.find({
-      equipment: { $in: equipmentIds },
-      timestamp: { $gte: new Date(startDate), $lte: new Date(endDate) }
-    }).select('TTL');
-
-    let stats = { green: 0, orange: 0, red: 0 };
-    ttlData.forEach(result => {
-      if (result.TTL && result.TTL.length > 0) {
-        const averageTTL = result.TTL.reduce((sum, current) => sum + current, 0) / result.TTL.length;
-        if (averageTTL < 56) stats.green++;
-        else if (averageTTL <= 113) stats.orange++;
+        if (averageTTL <= 46) stats.green++;
+        else if (averageTTL <= 48 ) stats.orange++;
         else stats.red++;
       }
     });
@@ -651,21 +619,6 @@ app.post('/api/ttlStats', async (req, res) => {
 });
 
 
-app.get('/pays', async (req, res) => {
-  try {
-    const aggregation = await Equip.aggregate([
-      {
-        $group: {
-          _id: "$Pays",
-          count: { $sum: 1 }
-        }
-      }
-    ]);
-    res.json(aggregation.map(item => ({ id: item._id, value: item.count })));
-  } catch (error) {
-    res.status(500).json({ message: "Erreur lors de la récupération des données", error });
-  }
-});
 
 app.post('/api/reports/generateDashboardPDF', async (req, res) => {
   const { startDate, endDate, equipments, data } = req.body;
