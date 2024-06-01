@@ -490,11 +490,11 @@ const formatBarChartData = (data) => {
   }).filter((item) => item !== null);
 };
 const getColorByTTL = (TTL) => {
-  if (TTL <=45) {
+  if (TTL < 56) {
     return "green";
-  } else if (TTL >= 48 && TTL < 113) {
+  } else if (TTL >= 56 && TTL <= 113) {
     return "orange";
-  } else if (TTL >= 113) {
+  } else if (TTL > 113) {
     return "red";
   } else {
     console.error("Unexpected TTL value:", TTL);
@@ -568,11 +568,11 @@ app.post('/api/erij', async (req, res) => {
       const averageTTL = result.TTL.reduce((sum, current) => sum + current, 0) / result.TTL.length;
       const point = { x: new Date(result.timestamp).toISOString(), y: averageTTL };
   
-      if (averageTTL <= 45) {
+      if (averageTTL < 56) {
         lines.normal.data.push(point);
-      } else if (averageTTL >= 48 && averageTTL < 113) {
+      } else if (averageTTL >= 56 && averageTTL <= 113) {
         lines.passable.data.push(point);
-      } else if (averageTTL >= 113) {
+      } else if (averageTTL > 113) {
         lines.surpassed.data.push(point);
       }
     });
@@ -604,8 +604,8 @@ app.post('/api/ttlStats', async (req, res) => {
     ttlData.forEach(result => {
       if (result.TTL && result.TTL.length > 0) {
         const averageTTL = result.TTL.reduce((sum, current) => sum + current, 0) / result.TTL.length;
-        if (averageTTL <=45) stats.green++;
-        else if (averageTTL >= 48 && averageTTL <113) stats.orange++;
+        if (averageTTL < 56) stats.green++;
+        else if (averageTTL <= 113) stats.orange++;
         else stats.red++;
       }
     });
@@ -618,6 +618,37 @@ app.post('/api/ttlStats', async (req, res) => {
   }
 });
 
+app.post('/api/ttlStats', async (req, res) => {
+  const { equipmentIds, startDate, endDate } = req.body;
+
+  if (!equipmentIds || equipmentIds.length === 0 || !startDate || !endDate) {
+    console.error('Missing parameters:', { equipmentIds, startDate, endDate });
+    return res.status(400).json({ error: 'Missing parameters' });
+  }
+
+  try {
+    const ttlData = await PingResult.find({
+      equipment: { $in: equipmentIds },
+      timestamp: { $gte: new Date(startDate), $lte: new Date(endDate) }
+    }).select('TTL');
+
+    let stats = { green: 0, orange: 0, red: 0 };
+    ttlData.forEach(result => {
+      if (result.TTL && result.TTL.length > 0) {
+        const averageTTL = result.TTL.reduce((sum, current) => sum + current, 0) / result.TTL.length;
+        if (averageTTL < 56) stats.green++;
+        else if (averageTTL <= 113) stats.orange++;
+        else stats.red++;
+      }
+    });
+
+    console.log('Computed stats:', stats);
+    res.json(stats);
+  } catch (error) {
+    console.error('Error fetching TTL stats:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 
 app.get('/pays', async (req, res) => {
