@@ -70,7 +70,7 @@ const generateInterventionReport = async (startDate, endDate, equipmentIds) => {
 const createInterventionSummary = async (interventionWithAlerts) => {
   let summary =
     `Equipment: ${interventionWithAlerts.equipment.Nom}\n\n` +
-    `Intervention ID: ${interventionWithAlerts._id}\n` +
+    
     `Type: ${interventionWithAlerts.type}\n` +
     `Description: ${interventionWithAlerts.description}\n` +
     `Date: ${formatDate(interventionWithAlerts.date)}\n`;
@@ -112,7 +112,7 @@ function generatePDF(reportContent) {
       .on('finish', () => resolve(filePath))
       .on('error', (error) => reject(error));
 
-    doc.fontSize(20).text('Intervention Report', { align: 'center' }).moveDown(2);
+    doc.fontSize(20).text('Rapport des interventions ', { align: 'center' }).moveDown(2);
 
     doc.fontSize(12).text(reportContent, {
       width: 500,
