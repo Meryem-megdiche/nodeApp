@@ -94,11 +94,8 @@ function formatDate(date) {
   return new Date(date).toLocaleDateString("fr-FR", {
     day: "2-digit",
     month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit"
-  }).replace(/(\d{2})\/(\d{2})\/(\d{4}), (\d{2}):(\d{2}):(\d{2})/, '$1/$2/$3 $4:$5:$6');
+    year: "numeric"
+  });
 }
 
 function generatePDF(reportContent) {
