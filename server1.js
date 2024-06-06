@@ -494,7 +494,7 @@ const getColorByTTL = (TTL) => {
     return "green";
   } else if (TTL > 46 && TTL < 48) {
     return "orange";
-  } else if (TTL >= 48 &&  TTL < 113) {
+  } else if (TTL >= 48 &&  TTL < 120) {
     return "red";
   } else {
     console.error("Unexpected TTL value:", TTL);
@@ -572,7 +572,7 @@ app.post('/api/erij', async (req, res) => {
         lines.normal.data.push(point);
       } else if (averageTTL > 46 && averageTTL < 48) {
         lines.passable.data.push(point);
-      } else if (averageTTL >= 48 && averageTTL < 113 ) {
+      } else if (averageTTL >= 48 && averageTTL < 120 ) {
         lines.surpassed.data.push(point);
       }
     });
