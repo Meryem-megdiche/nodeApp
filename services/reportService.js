@@ -80,8 +80,8 @@ const createInterventionSummary = async (interventionWithAlerts, index) => {
   }
 
   const alertsSummary = interventionWithAlerts.alerts.map(alert => {
-    let alertStatus = alert.status === 'dysfonctionnel' ? 'dysfonctionnel' : 'fonctionnel';
-    let resolvedStatus = alert.resolved ? ' est résolu le problème ' : "n'a pas résolu le problème ";
+    let alertStatus = alert.status === 'dysfonctionnel' ? 'dysfonctionnel' : 'En bon état';
+    let resolvedStatus = alert.resolved ? ' a résolu le problème ' : "n'a pas résolu le problème ";
     return `Status de l'équipement: ${alertStatus}\nL'intervention: ${resolvedStatus}\nDate: ${formatDate(alert.timestamp)}\n`;
   }).join("\n");
 
